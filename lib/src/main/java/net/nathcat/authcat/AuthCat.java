@@ -163,4 +163,24 @@ public class AuthCat {
         
         return new AuthResult();
     }
+
+    /**
+     * Generate a quick auth token for a user
+     * @param user The user to generate the quick auth token for
+     * @return The quick auth token
+     * @throws InterruptedException 
+     * @throws IOException 
+     * @throws ParseException 
+     */
+    public static String createAuthToken(JSONObject user) throws ParseException, IOException, InterruptedException {
+        JSONObject result = (JSONObject) new JSONParser().parse(
+            sendRequest("https://data.nathcat.net/sso/create-quick-auth.php", user).toString()
+        );
+
+        if (result.get("status").equals("success")) {
+            return (String) result.get("token");
+        }
+
+        return null;
+    }
 }
