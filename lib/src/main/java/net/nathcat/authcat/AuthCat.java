@@ -142,4 +142,25 @@ public class AuthCat {
 
         return authCatResponse;
     }
+
+    /**
+     * Use a quick auth token for authentication.
+     * @param token The quick auth token to use
+     * @return The AuthResult 
+     * @throws InterruptedException 
+     * @throws IOException 
+     * @throws ParseException 
+     */
+    public static AuthResult tokenAuth(String token) throws IOException, InterruptedException, ParseException {
+        JSONObject body = new JSONObject();
+        body.put("quick-auth-token", token);
+        
+        JSONObject result = (JSONObject) new JSONParser().parse(sendRequest("https://data.nathcat.net/sso/try-login.php", body).toString());
+        
+        if (result.get("status").equals("success")) {
+            return new AuthResult((JSONObject) result.get("user"));
+        }
+        
+        return new AuthResult();
+    }
 }
