@@ -55,9 +55,11 @@ public class AuthCat {
             try {
                 JSONObject data = (JSONObject) new JSONParser().parse(response.body);
                 if (data.get("status").equals("success")) {
+                    System.out.println("AuthCat: Successful authentication.");
                     return new AuthResult((JSONObject) data.get("user"));
                 }
                 else {
+                    System.out.println("AuthCat: Failed authentication.");
                     return new AuthResult();
                 }
             }
@@ -80,9 +82,13 @@ public class AuthCat {
         if (response.statusCode == 200) {
             String body = response.body;
 
-            if (body.contentEquals("[]")) return new AuthResult();
+            if (body.contentEquals("[]")) {
+                System.out.println("AuthCat: Failed cookie authentication.");
+                return new AuthResult(); 
+            } 
 
             try {
+                System.out.println("AuthCat: Successful authentication.");
                 return new AuthResult((JSONObject) ((JSONObject) new JSONParser().parse(body)).get("user"));
             }
             catch (ParseException e) {
@@ -107,6 +113,7 @@ public class AuthCat {
 
         if (response.statusCode == 200) {
             try {
+                System.out.println("AuthCat: User search complete.");
                 return (JSONObject) new JSONParser().parse(response.body);
             }
             catch (ParseException e) {
@@ -132,17 +139,24 @@ public class AuthCat {
                 authCatResponse = loginWithCookie((String) user.get("cookieAuth"));
 
                 if (!authCatResponse.result && user.containsKey("username") && user.containsKey("password")) {
+                    System.out.println("AuthCat: Failed cookie authentication, trying normal authentication.");
                     // Try normal authentication
                     user.remove("cookieAuth");
                     authCatResponse = tryAuthenticate(user);
                 }
             } else {
+                System.out.println("AuthCat: No cookie provided, trying normal authentication.");
                 authCatResponse = tryLogin(user);
             }
         } catch (InvalidResponse e) {
             throw new RuntimeException(e);
         }
 
+        if (authCatResponse.result) {
+            System.out.println("AuthCat: User authenticated successfully.");
+        } else {
+            System.out.println("AuthCat: User authentication failed.");
+        }
         return authCatResponse;
     }
 
@@ -158,12 +172,15 @@ public class AuthCat {
         JSONObject body = new JSONObject();
         body.put("quick-auth-token", token);
         
-        JSONObject result = (JSONObject) new JSONParser().parse(httpProvider.post("https://data.nathcat.net/sso/try-login.php", body, Map.of("Content-Type", "application/json")).toString());
+        JSONObject result = (JSONObject) new JSONParser().parse(httpProvider.post("https://data.nathcat.net/sso/try-login.php", body, Map.of("Content-Type", "application/json")).body);
         
         if (result.get("status").equals("success")) {
+            System.out.println("AuthCat: Successful token authentication.");
             return new AuthResult((JSONObject) result.get("user"));
         }
         
+        System.out.println("AuthCat: Failed token authentication.");
+        System.out.println(result.get("message"));
         return new AuthResult();
     }
 
@@ -181,8 +198,12 @@ public class AuthCat {
         );
 
         if (result.get("status").equals("success")) {
+            System.out.println("AuthCat: Successfully created quick auth token.");
             return (String) result.get("token");
         }
+
+        System.out.println("AuthCat: Failed to create quick auth token.");
+        System.out.println(result.get("message"));
 
         return null;
     }
