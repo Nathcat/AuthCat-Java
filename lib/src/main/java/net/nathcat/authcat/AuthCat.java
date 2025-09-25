@@ -40,8 +40,6 @@ public class AuthCat {
      * Call the authentication service from AuthCat.
      * @param authEntry The supplied authentication data, should contain a username and password field
      * @return The AuthResult
-     * @throws IOException Thrown if an I/O error occurs when communicating with the service
-     * @throws InterruptedException Thrown if the connection with the service is interrupted
      * @throws InvalidResponse Thrown if the service responds with an unexpected or invalid response code
      */
     public AuthResult tryLogin(JSONObject authEntry) throws InvalidResponse {
@@ -104,8 +102,6 @@ public class AuthCat {
      * Call the user search service
      * @param searchData The JSON search data, must contain either a username field, or a fullName field, or both
      * @return The JSON response from the server
-     * @throws IOException Thrown if an I/O error occurs when communicating with the service
-     * @throws InterruptedException Thrown if the connection with the service is interrupted
      * @throws InvalidResponse Thrown if the service responds with an unexpected or invalid response
      */
     public JSONObject userSearch(JSONObject searchData) throws InvalidResponse {
@@ -164,8 +160,6 @@ public class AuthCat {
      * Use a quick auth token for authentication.
      * @param token The quick auth token to use
      * @return The AuthResult 
-     * @throws InterruptedException 
-     * @throws IOException 
      * @throws ParseException 
      */
     public AuthResult tokenAuth(String token) throws ParseException {
@@ -188,8 +182,6 @@ public class AuthCat {
      * Generate a quick auth token for a user
      * @param user The user to generate the quick auth token for
      * @return The quick auth token
-     * @throws InterruptedException 
-     * @throws IOException 
      * @throws ParseException 
      */
     public String createAuthToken(JSONObject user) throws ParseException {
